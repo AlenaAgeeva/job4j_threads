@@ -1,27 +1,28 @@
 package concurrent;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Wget implements Runnable {
     private final String url;
     private final int speed;
+    private final String filePath;
 
-    public Wget(String url, int speed) {
-        this.url = url;
-        this.speed = speed;
-        validateArgs();
+    public Wget(String[] args) {
+        validateArgs(args);
+        this.url = args[0];
+        this.speed = Integer.parseInt(args[1]);
+        this.filePath = args[2];
     }
 
     @Override
     public void run() {
         var startTime = System.currentTimeMillis();
-        var file = new File("tmp.xml");
         try (var input = new URL(url).openStream();
-             var output = new FileOutputStream(file)) {
+             var output = new FileOutputStream(filePath)) {
             var dataBuffer = new byte[1024];
             int bytesRead;
             long downloadData = 0;
@@ -42,7 +43,7 @@ public class Wget implements Runnable {
                     downloadData = 0;
                 }
             }
-            System.out.println(Files.size(file.toPath()) + " bytes");
+            System.out.println(Files.size(Path.of(filePath)) + " bytes");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -50,22 +51,26 @@ public class Wget implements Runnable {
         }
     }
 
-    private void validateArgs() {
-        if (speed <= 0) {
+    private void validateArgs(String[] args) {
+        if (args.length != 3) {
+            throw new IllegalArgumentException("Wrong arguments length.");
+        } else if (Integer.parseInt(args[1]) <= 0) {
             throw new IllegalArgumentException("Wrong speed number.");
-        } else if (url.isEmpty() || url.isBlank()) {
+        } else if (args[0].isEmpty() || args[0].isBlank()) {
             throw new IllegalArgumentException("Url is empty.");
-        } else if (!url.startsWith("https:")) {
+        } else if (!args[0].startsWith("https:")) {
             throw new IllegalArgumentException("Wrong url.");
-        } else if (url == null) {
-            throw new IllegalArgumentException("Cannot find url in thread.properties file");
+        } else if (args[0] == null) {
+            throw new IllegalArgumentException("Cannot find url.");
+        } else if (args[2] == null) {
+            throw new IllegalArgumentException("Cannot find filepath.");
+        } else if (args[2].isEmpty() || args[2].isBlank()) {
+            throw new IllegalArgumentException("Filepath is empty.");
         }
     }
 
     public static void main(String[] args) throws InterruptedException {
-        String url = args[0];
-        int speed = Integer.parseInt(args[1]);
-        Thread wget = new Thread(new Wget(url, speed));
+        Thread wget = new Thread(new Wget(args));
         wget.start();
         wget.join();
     }
