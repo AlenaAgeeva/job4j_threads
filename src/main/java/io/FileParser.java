@@ -14,7 +14,7 @@ public class FileParser {
         StringBuilder stringBuilder = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             int data;
-            while ((data = reader.read()) > 0) {
+            while ((data = reader.read()) != -1) {
                 char tmp = (char) data;
                 if (filter.test(tmp)) {
                     stringBuilder.append(tmp);

@@ -36,7 +36,6 @@ class FileParserTest {
         putTestText();
         FileParser fileParser = new FileParser(tempFile);
         String content = fileParser.getContentWithoutUnicode();
-        System.out.println(content);
         String expected = "Hello World7! !";
         assertThat(expected).isEqualTo(content);
     }
