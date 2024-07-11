@@ -31,8 +31,6 @@ public class ParallelSearch {
         );
         producer.start();
         producer.join();
-        if (producer.getState().equals(Thread.State.TERMINATED)) {
-            consumer.interrupt();
-        }
+        consumer.interrupt();
     }
 }
