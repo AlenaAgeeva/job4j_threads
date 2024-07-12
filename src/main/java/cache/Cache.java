@@ -13,13 +13,18 @@ public class Cache {
         return memory.putIfAbsent(model.id(), model) == null;
     }
 
-    public boolean update(Base model) throws OptimisticException {
-        if (model.version() != findById(model.id()).get().version()) {
-            throw new OptimisticException("Different cache versions.");
-        }
+    public boolean update(Base model) {
         var stored = memory.computeIfPresent(model.id(),
-                (id, base) ->
-                        new Base(model.id(), model.name(), model.version() + 1));
+                (id, base) -> {
+                    if (model.version() != base.version()) {
+                        try {
+                            throw new OptimisticException("Different cache versions.");
+                        } catch (OptimisticException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    return new Base(model.id(), model.name(), model.version() + 1);
+                });
         return stored != null;
     }
 

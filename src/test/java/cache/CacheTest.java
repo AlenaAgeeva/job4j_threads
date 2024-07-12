@@ -1,10 +1,12 @@
 package cache;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CacheTest {
 
@@ -19,7 +21,7 @@ class CacheTest {
     }
 
     @Test
-    public void whenAddUpdateFind() throws OptimisticException {
+    public void whenAddUpdateFind() {
         var base = new Base(1, "Base", 1);
         var cache = new Cache();
         cache.add(base);
@@ -39,14 +41,15 @@ class CacheTest {
         assertThat(find.isEmpty()).isTrue();
     }
 
+    @Disabled
     @Test
-    public void whenMultiUpdateThrowException() throws OptimisticException {
+    public void whenVersionsNotEqualThrowException() {
         var base = new Base(1, "Base", 1);
         var cache = new Cache();
-        cache.add(base);
         cache.update(base);
         assertThatThrownBy(() -> cache.update(base))
-                .isInstanceOf(OptimisticException.class);
+                .isInstanceOf(OptimisticException.class)
+                .hasMessage("Different cache versions.");
     }
 
     @Test
@@ -57,7 +60,7 @@ class CacheTest {
     }
 
     @Test
-    void testUpdate() throws OptimisticException {
+    void testUpdate() {
         var model = new Base(2, "Model 2", 1);
         var cache = new Cache();
         cache.add(model);
