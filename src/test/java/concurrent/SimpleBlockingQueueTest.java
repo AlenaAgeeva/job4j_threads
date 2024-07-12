@@ -15,10 +15,17 @@ class SimpleBlockingQueueTest {
     public void whenFetchAllIntegersThenGetIt() throws InterruptedException {
         final CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
         final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(5);
-        Thread producer = new Thread(
-                () -> IntStream.range(0, 5).forEach(
-                        queue::offer)
-        );
+            Thread producer = new Thread(
+                    () -> {
+                        for (int i = 0; i < 5; i++) {
+                            try {
+                                queue.offer(i);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+            );
         producer.start();
         Thread consumer = new Thread(
                 () -> {
@@ -44,8 +51,15 @@ class SimpleBlockingQueueTest {
         final CopyOnWriteArrayList<Character> buffer = new CopyOnWriteArrayList<>();
         final SimpleBlockingQueue<Character> queue = new SimpleBlockingQueue<>(5);
         Thread producer = new Thread(
-                () -> List.of('a', 'b', 'c', 'd', 'f').forEach(
-                        queue::offer)
+                () -> {
+                    for (Character character : List.of('a', 'b', 'c', 'd', 'f')) {
+                        try {
+                            queue.offer(character);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
         );
         producer.start();
         Thread consumer = new Thread(
@@ -71,11 +85,15 @@ class SimpleBlockingQueueTest {
     public void testOfferAndPollOperations() throws InterruptedException {
         SimpleBlockingQueue<Integer> blockingQueue = new SimpleBlockingQueue<>(5);
         Thread producerThread = new Thread(() -> {
-            blockingQueue.offer(1);
-            blockingQueue.offer(2);
-            blockingQueue.offer(3);
-            blockingQueue.offer(4);
-            blockingQueue.offer(5);
+            try {
+                blockingQueue.offer(1);
+                blockingQueue.offer(2);
+                blockingQueue.offer(3);
+                blockingQueue.offer(4);
+                blockingQueue.offer(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         });
         Thread consumerThread = new Thread(() -> {
             try {
@@ -106,7 +124,11 @@ class SimpleBlockingQueueTest {
         AtomicInteger consumerSum = new AtomicInteger(0);
         Thread producer = new Thread(() -> {
             for (int i = 1; i <= 10; i++) {
-                queue.offer(i);
+                try {
+                    queue.offer(i);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 producerSum.addAndGet(i);
             }
         });

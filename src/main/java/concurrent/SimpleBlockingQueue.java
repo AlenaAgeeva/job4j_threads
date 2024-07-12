@@ -18,17 +18,13 @@ public class SimpleBlockingQueue<T> {
         this.maxSize = maxSize;
     }
 
-    public void offer(T value) {
+    public void offer(T value) throws InterruptedException {
         synchronized (monitor) {
-            try {
-                while (maxSize <= queue.size()) {
-                    monitor.wait();
-                }
-                queue.offer(value);
-                monitor.notifyAll();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while (queue.size() >= maxSize) {
+                monitor.wait();
             }
+            queue.offer(value);
+            monitor.notifyAll();
         }
     }
 
