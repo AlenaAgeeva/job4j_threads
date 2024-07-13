@@ -17,11 +17,7 @@ public class Cache {
         var stored = memory.computeIfPresent(model.id(),
                 (id, base) -> {
                     if (model.version() != base.version()) {
-                        try {
-                            throw new OptimisticException("Different cache versions.");
-                        } catch (OptimisticException e) {
-                            e.printStackTrace();
-                        }
+                        throw new OptimisticException("Different cache versions.");
                     }
                     return new Base(model.id(), model.name(), model.version() + 1);
                 });

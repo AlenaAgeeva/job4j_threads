@@ -1,6 +1,5 @@
 package cache;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -41,11 +40,11 @@ class CacheTest {
         assertThat(find.isEmpty()).isTrue();
     }
 
-    @Disabled
     @Test
     public void whenVersionsNotEqualThrowException() {
         var base = new Base(1, "Base", 1);
         var cache = new Cache();
+        cache.add(base);
         cache.update(base);
         assertThatThrownBy(() -> cache.update(base))
                 .isInstanceOf(OptimisticException.class)
