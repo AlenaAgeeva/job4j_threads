@@ -25,10 +25,10 @@ class ParallelSearchTest {
 
     @Test
     public void testRecursiveSearchDouble() {
-        Double[] array = {10.6, 34.6, 89.9, 23.5, 13.2, 45.6, 23.8, 86.5, 345.6, 334.6, 23.5, 345.3, 111.3};
+        Double[] array = {10.6, 34.6, 89.9, 24.5, 13.2, 45.6, 23.8, 86.5, 345.6, 334.6, 23.5, 345.3, 111.3};
         assertThat(ParallelSearch.search(array, 89.9)).isEqualTo(2);
         assertThat(ParallelSearch.search(array, 345.6)).isEqualTo(8);
-        assertThat(ParallelSearch.search(array, 23.5)).isEqualTo(3);
+        assertThat(ParallelSearch.search(array, 23.5)).isEqualTo(10);
     }
 
     @Test

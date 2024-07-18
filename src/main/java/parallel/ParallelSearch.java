@@ -9,6 +9,7 @@ public class ParallelSearch<T> extends RecursiveTask<Integer> {
     private final T target;
     private final int from;
     private final int to;
+    private static final int THRESHOLD = 10;
 
     public ParallelSearch(T[] array, T target, int from, int to) {
         this.array = array;
@@ -19,27 +20,25 @@ public class ParallelSearch<T> extends RecursiveTask<Integer> {
 
     @Override
     protected Integer compute() {
-        if (to - from <= 10) {
-            for (int i = from; i <= to; i++) {
-                if (array[i].equals(target)) {
-                    return i;
-                }
-            }
-            return -1;
+        if (to - from <= THRESHOLD) {
+            return check();
         } else {
             int mid = (from + to) / 2;
             ParallelSearch<T> leftSearch = new ParallelSearch<>(array, target, from, mid);
             ParallelSearch<T> rightSearch = new ParallelSearch<>(array, target, mid + 1, to);
             leftSearch.fork();
             rightSearch.fork();
-            int leftResult = leftSearch.join();
-            int rightResult = rightSearch.join();
-            if (leftResult != -1) {
-                return leftResult;
-            } else {
-                return rightResult;
+            return Math.max(leftSearch.join(), rightSearch.join());
+        }
+    }
+
+    private <T> int check() {
+        for (int i = from; i <= to; i++) {
+            if (array[i] != null && array[i].equals(target)) {
+                return i;
             }
         }
+        return -1;
     }
 
     public static <T> int search(T[] array, T target) {
