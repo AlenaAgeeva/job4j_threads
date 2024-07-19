@@ -22,14 +22,13 @@ public class ParallelSearch<T> extends RecursiveTask<Integer> {
     protected Integer compute() {
         if (to - from <= THRESHOLD) {
             return check();
-        } else {
-            int mid = (from + to) / 2;
-            ParallelSearch<T> leftSearch = new ParallelSearch<>(array, target, from, mid);
-            ParallelSearch<T> rightSearch = new ParallelSearch<>(array, target, mid + 1, to);
-            leftSearch.fork();
-            rightSearch.fork();
-            return Math.max(leftSearch.join(), rightSearch.join());
         }
+        int mid = (from + to) / 2;
+        ParallelSearch<T> leftSearch = new ParallelSearch<>(array, target, from, mid);
+        ParallelSearch<T> rightSearch = new ParallelSearch<>(array, target, mid + 1, to);
+        leftSearch.fork();
+        rightSearch.fork();
+        return Math.max(leftSearch.join(), rightSearch.join());
     }
 
     private <T> int check() {
